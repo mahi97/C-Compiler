@@ -58,19 +58,23 @@ private:
     bool isValidNumber(QString);
     void appendToTables(TokenType, QString);
     KeywordType getKeywordType(QString);
+    IdentifierData getIdentifierData(QString);
+    NumberData getNumberData(QString);
 
     // Tables
     QList < QPair < TokenType, int > > symbolTable;
     QList < QPair < int, KeywordType > > keywordTable;
     QList < QPair < int, IdentifierData > > identiTable;
     QList < QPair < int, NumberData > > numberTable;
-    QList < QPair < int, char > > characterTable;
+    QList < QPair < int, QChar > > characterTable;
     QList < QPair < int, QString > > operatorTable;
-
+    QList < QPair < int, QChar > > punctuationTable;
     // Lists
     QList < QString > validKeywords;
     QList < QString > validOperator;
     QList < QString > validPunctuation;
+
+    QList < int > headOfLines;
 
     // symbol counters
     int keywordCnt;

@@ -19,21 +19,36 @@ LexicalAnalyzer::LexicalAnalyzer()
                   << "true"
                   << "false";
 
+    validOperator << "=" << "+=" << "-=" << "*=" << "/=" << "%="
+                  << "&&" << "||" << "!"
+                  << "==" << "!=" << ">" << "<" << ">=" << "<="
+                  << "+" << "-" << "*" << "/" << "++" << "--";
+
+    validPunctuation << "," << "(" << ")" << "{" << "}" << ":" << ";";
 
 }
 
 void LexicalAnalyzer::analyze(QTextStream* _textStream)
 {
-    qDebug() << validKeywords;
+    bool comment = false;
     while (!_textStream->atEnd()) {
         QString line = _textStream->readLine();
         QStringList tokens = line.split(' ');
+        headOfLines.append(symbolTable.size());
         for (int i = 0 ; i < tokens.size() ; i++) {
-            TokenType tempType = getTokenType(tokens.at(i));
-            if (tempType == TokenType::UNKNOWN) {
-                qDebug() << "Wrong Token : " << tokens.at(i) << " AT : " << i;
-            } else {
-                appendToTables(tempType, tokens.at(i));
+
+            // handle comments
+            if (tokens.at(i) == "//") break;
+            if (tokens.at(i) == "/*") comment = true;
+            if (tokens.at(i) == "*/") comment = false;
+
+            if (!comment) {
+                TokenType tempType = getTokenType(tokens.at(i));
+                if (tempType == TokenType::UNKNOWN) {
+                    qDebug() << "Wrong Token : " << tokens.at(i) << " AT : " << i;
+                } else {
+                    appendToTables(tempType, tokens.at(i));
+                }
             }
         }
     }
@@ -52,7 +67,7 @@ TokenType LexicalAnalyzer::getTokenType(QString _token)
 
 bool LexicalAnalyzer::isValidIdentifier(QString _token)
 {
-    QRegExp rx("∧([a−z][A−Z])+([a−z][A−Z][0−9])∗");
+    QRegExp rx("([a-z]|[A-Z])+([a-z]|[A-Z]|[0-9])*");
     return rx.exactMatch(_token);
 }
 
@@ -64,7 +79,7 @@ bool LexicalAnalyzer::isValidCharacter(QString _token)
 
 bool LexicalAnalyzer::isValidNumber(QString _token)
 {
-    if (_token.size() == 1) return _token.at(0).isNumber();
+    if (_token.size() > 0)  return _token.at(0).isNumber();
     else                    return false;
 }
 
@@ -77,19 +92,29 @@ void LexicalAnalyzer::appendToTables(TokenType _type, QString _token)
         keywordCnt++;
         break;
     case TokenType::Identifier :
-
+        symbolTable.append(qMakePair(_type, identifierCnt));
+        identiTable.append(qMakePair(identifierCnt, getIdentifierData(_token)));
+        identifierCnt++;
         break;
     case TokenType::Operator :
-
+        symbolTable.append(qMakePair(_type, operatorCnt));
+        operatorTable.append(qMakePair(operatorCnt, _token));
+        operatorCnt++;
         break;
     case TokenType::Number :
-
+        symbolTable.append(qMakePair(_type, numberCnt));
+        numberTable.append(qMakePair(numberCnt, getNumberData(_token)));
+        numberCnt++;
         break;
     case TokenType::Punctuation :
-
+        symbolTable.append(qMakePair(_type, punctuationCnt));
+        punctuationTable.append(qMakePair(punctuationCnt, _token[0]));
+        punctuationCnt++;
         break;
     case TokenType::Character :
-
+        symbolTable.append(qMakePair(_type, characterCnt));
+        characterTable.append(qMakePair(characterCnt, _token[0]));
+        characterCnt++;
         break;
     case TokenType::UNKNOWN:
         qDebug() << "Something went wrong in filtering";
@@ -100,4 +125,23 @@ void LexicalAnalyzer::appendToTables(TokenType _type, QString _token)
 KeywordType LexicalAnalyzer::getKeywordType(QString _str)
 {
     return KeywordType(validKeywords.indexOf(_str));
+}
+
+IdentifierData LexicalAnalyzer::getIdentifierData(QString _value)
+{
+    IdentifierData id;
+    id.value = _value;
+    id.memoryAddr = NULL;
+    id.registerAddr = NULL;
+    return id;
+}
+
+NumberData LexicalAnalyzer::getNumberData(QString _number)
+{
+    NumberData nd;
+    nd.name = QString("S%1").arg(numberCnt);
+    nd.value = _number.toInt();
+    nd.memoryAddr = NULL;
+    nd.registerAddr = NULL;
+    return nd;
 }
