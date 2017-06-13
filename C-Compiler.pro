@@ -9,4 +9,10 @@ CONFIG -= app_bundle
 
 TEMPLATE = app
 
-SOURCES += main.cpp
+SOURCES += main.cpp \
+    compiler.cpp \
+    lexicalanalyzer.cpp
+
+HEADERS += \
+    compiler.h \
+    lexicalanalyzer.h
