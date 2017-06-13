@@ -11,8 +11,11 @@ TEMPLATE = app
 
 SOURCES += main.cpp \
     compiler.cpp \
-    lexicalanalyzer.cpp
+    lexicalanalyzer.cpp \
+    syntaxanalyzer.cpp
 
 HEADERS += \
     compiler.h \
-    lexicalanalyzer.h
+    lexicalanalyzer.h \
+    syntaxanalyzer.h \
+    base.h

@@ -28,5 +28,11 @@ void Compiler::lexicalAnalyze() {
     if (m_lexi) delete m_lexi;
     m_lexi = new LexicalAnalyzer();
     QTextStream in(m_file);
+    m_lexi->init(symbolTable, keywordTable, identiTable,
+                 numberTable, characterTable, operatorTable, punctuationTable);
     m_lexi->analyze(&in);
+}
+
+void Compiler::syntaxAnalyze() {
+
 }

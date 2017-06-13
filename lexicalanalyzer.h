@@ -1,55 +1,20 @@
 #ifndef LEXICALANALYZER_H
 #define LEXICALANALYZER_H
 
-#include <QString>
-#include <QTextStream>
-#include <QFile>
-#include <QList>
-#include <QPair>
-#include <QRegExp>
-#include <QDebug>
-
-enum class TokenType {
-    Keyword,
-    Identifier,
-    Operator,
-    Number,
-    Punctuation,
-    Character,
-    UNKNOWN
-};
-
-enum class KeywordType {
-    IF    = 0,
-    ELSE  = 1,
-    WHILE = 2,
-    INT   = 3,
-    CHAR  = 4,
-    BOOL  = 5,
-    _NULL = 6,
-    TRUE  = 7,
-    FALSE = 8
-};
-
-struct IdentifierData {
-    QString value;
-    int* registerAddr;
-    int* memoryAddr;
-};
-
-struct NumberData {
-    QString name;
-    int value;
-    int* registerAddr;
-    int* memoryAddr;
-};
+#include "base.h"
 
 class LexicalAnalyzer
 {
 public:
     LexicalAnalyzer();
     void analyze(QTextStream *_textStream);
-
+    void init(QList<QPair<TokenType, int> > &symbolTable,
+              QList<QPair<int, KeywordType> > &keywordTable,
+              QList<QPair<int, IdentifierData> > &identiTable,
+              QList<QPair<int, NumberData> > &numberTable,
+              QList<QPair<int, QChar> > &characterTable,
+              QList<QPair<int, QString> > &operatorTable,
+              QList<QPair<int, QChar> > &punctuationTable);
 private:
     // methodes
     TokenType getTokenType(QString);
@@ -62,13 +27,13 @@ private:
     NumberData getNumberData(QString);
 
     // Tables
-    QList < QPair < TokenType, int > > symbolTable;
-    QList < QPair < int, KeywordType > > keywordTable;
-    QList < QPair < int, IdentifierData > > identiTable;
-    QList < QPair < int, NumberData > > numberTable;
-    QList < QPair < int, QChar > > characterTable;
-    QList < QPair < int, QString > > operatorTable;
-    QList < QPair < int, QChar > > punctuationTable;
+    QList < QPair < TokenType, int > > *symbolTable;
+    QList < QPair < int, KeywordType > > *keywordTable;
+    QList < QPair < int, IdentifierData > > *identiTable;
+    QList < QPair < int, NumberData > > *numberTable;
+    QList < QPair < int, QChar > > *characterTable;
+    QList < QPair < int, QString > > *operatorTable;
+    QList < QPair < int, QChar > > *punctuationTable;
     // Lists
     QList < QString > validKeywords;
     QList < QString > validOperator;

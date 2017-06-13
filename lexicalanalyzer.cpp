@@ -34,7 +34,7 @@ void LexicalAnalyzer::analyze(QTextStream* _textStream)
     while (!_textStream->atEnd()) {
         QString line = _textStream->readLine();
         QStringList tokens = line.split(' ');
-        headOfLines.append(symbolTable.size());
+        headOfLines.append(symbolTable->size());
         for (int i = 0 ; i < tokens.size() ; i++) {
 
             // handle comments
@@ -52,6 +52,23 @@ void LexicalAnalyzer::analyze(QTextStream* _textStream)
             }
         }
     }
+}
+
+void LexicalAnalyzer::init(QList<QPair<TokenType, int> > &symbolTable,
+                           QList<QPair<int, KeywordType> > &keywordTable,
+                           QList<QPair<int, IdentifierData> > &identiTable,
+                           QList<QPair<int, NumberData> > &numberTable,
+                           QList<QPair<int, QChar> > &characterTable,
+                           QList<QPair<int, QString> > &operatorTable,
+                           QList<QPair<int, QChar> > &punctuationTable)
+{
+    this->symbolTable = &symbolTable;
+    this->keywordTable = &keywordTable;
+    this->identiTable = &identiTable;
+    this->numberTable = &numberTable;
+    this->characterTable = &characterTable;
+    this->operatorTable = &operatorTable;
+    this->punctuationTable = &punctuationTable;
 }
 
 TokenType LexicalAnalyzer::getTokenType(QString _token)
@@ -87,33 +104,33 @@ void LexicalAnalyzer::appendToTables(TokenType _type, QString _token)
 {
     switch (_type) {
     case TokenType::Keyword :
-        symbolTable.append(qMakePair(_type, keywordCnt));
-        keywordTable.append(qMakePair(keywordCnt, getKeywordType(_token)));
+        symbolTable->append(qMakePair(_type, keywordCnt));
+        keywordTable->append(qMakePair(keywordCnt, getKeywordType(_token)));
         keywordCnt++;
         break;
     case TokenType::Identifier :
-        symbolTable.append(qMakePair(_type, identifierCnt));
-        identiTable.append(qMakePair(identifierCnt, getIdentifierData(_token)));
+        symbolTable->append(qMakePair(_type, identifierCnt));
+        identiTable->append(qMakePair(identifierCnt, getIdentifierData(_token)));
         identifierCnt++;
         break;
     case TokenType::Operator :
-        symbolTable.append(qMakePair(_type, operatorCnt));
-        operatorTable.append(qMakePair(operatorCnt, _token));
+        symbolTable->append(qMakePair(_type, operatorCnt));
+        operatorTable->append(qMakePair(operatorCnt, _token));
         operatorCnt++;
         break;
     case TokenType::Number :
-        symbolTable.append(qMakePair(_type, numberCnt));
-        numberTable.append(qMakePair(numberCnt, getNumberData(_token)));
+        symbolTable->append(qMakePair(_type, numberCnt));
+        numberTable->append(qMakePair(numberCnt, getNumberData(_token)));
         numberCnt++;
         break;
     case TokenType::Punctuation :
-        symbolTable.append(qMakePair(_type, punctuationCnt));
-        punctuationTable.append(qMakePair(punctuationCnt, _token[0]));
+        symbolTable->append(qMakePair(_type, punctuationCnt));
+        punctuationTable->append(qMakePair(punctuationCnt, _token[0]));
         punctuationCnt++;
         break;
     case TokenType::Character :
-        symbolTable.append(qMakePair(_type, characterCnt));
-        characterTable.append(qMakePair(characterCnt, _token[0]));
+        symbolTable->append(qMakePair(_type, characterCnt));
+        characterTable->append(qMakePair(characterCnt, _token[0]));
         characterCnt++;
         break;
     case TokenType::UNKNOWN:
