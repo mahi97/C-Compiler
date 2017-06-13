@@ -1,2 +1,2 @@
-int value = 154;
-bool mahi = false;
+int value = 154 ;
+bool mahi = false ;
